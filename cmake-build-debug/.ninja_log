@@ -1,0 +1,6 @@
+# ninja log v6
+274	313	1744770642074608848	bin/UpdaterDemoCpp	a593baa07bf65118
+219	274	1744770642019608994	lib/libtinyxml2.a	2a0ba2d14592e2e6
+1	26	1744772535876414205	build.ninja	326d0be4b65ce6e2
+1	248	1744770641801609586	CMakeFiles/UpdaterDemoCpp.dir/src/main.cpp.o	6673deb4e6b54db1
+1	219	1744770641801609586	third_party/tinyxml2/CMakeFiles/tinyxml2.dir/tinyxml2.cpp.o	7344dd611856b468

@@ -1,3 +1,6 @@
 [submodule "server"]
 	path = server
 	url = git@github.com:JekYUlll/FileServer_for_UpdaterDemoCpp.git
+[submodule "third_party/tinyxml2"]
+	path = third_party/tinyxml2
+	url = git@github.com:leethomason/tinyxml2.git
