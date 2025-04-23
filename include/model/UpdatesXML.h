@@ -2,73 +2,66 @@
 // Created by horeb on 25-4-16.
 //
 
-#ifndef MODEL_UPDATES_H
-#define MODEL_UPDATES_H
+#ifndef MODEL_UPDATES_XML_H
+#define MODEL_UPDATES_XML_H
+
+#include "model/Date.h"
+#include "model/Version.h"
 
 #include <string>
+#include <vector>
+
+namespace udc {
 
 /**
  * @struct PackageUpdate
- * @brief 对应Updates.xml里的：
-*       <PackageUpdate>
-            <Name>A</Name>
-            <DisplayName>A</DisplayName>
-            <Description>Example component A</Description>
-            <Version>1.0.2-1</Version>
-            <ReleaseDate>2015-01-01</ReleaseDate>
-            <Default>true</Default>
-            <UpdateFile CompressedSize="222" OS="Any" UncompressedSize="72"/>
-            <DownloadableArchives>content.7z</DownloadableArchives>
-            <SHA1>9d54e3a5adf3563913feee8ba23a99fb80d46590</SHA1>
-        </PackageUpdate>
+ * @brief 对应Updates.xml里的<PackageUpdate>
  */
 struct PackageUpdate {
-    std::string Name;
-    std::string DisplayName;
-    std::string Description;
-    std::string Version;
-    std::string ReleaseDate;
-    bool Default = false;
-    bool Virtual = false;
-    std::string DownloadableArchives; // 对应文件名
-    std::string SHA1;
+    std::string name;                 // xml: Name
+    std::string displayName;          // xml: DisplayName
+    std::string description;          // xml: Description
+    Version version;                  // xml: Version
+    std::string releaseDate;          // xml: ReleaseDate
+    bool isDefault = false;           // xml: Default
+    bool isVirtual = false;           // xml: Virtual
+    std::string downloadableArchives; // xml: DownloadableArchives
+    std::string sha1;                 // xml: SHA1
     struct {
         std::string os;
         int compressedSize = 0;
         int uncompressedSize = 0;
-    } UpdateFile;
+    } updateFile; // xml: UpdateFile
+};
+
+/**
+ * @struct Updates
+ * @brief 最外层，对应Updates.xml
+ */
+struct Updates {
+    std::string applicationName;         // xml: ApplicationName
+    Version applicationVersion;          // xml: ApplicationVersion
+    bool bChecksum = false;              // xml: Checksum
+    std::vector<PackageUpdate> packages; // xml: Packages
 };
 
 /**
  * @struct PackageMeta
- * @brief 对应组件元信息：package.xml
- * <Package>
-        <DisplayName>A</DisplayName>
-        <Description>Example component A</Description>
-        <Version>1.0.0</Version>
-        <ReleaseDate>2020-01-01</ReleaseDate>
-        <Default>true</Default>
-        <Script>script1.0.0.qs</Script>
-    </Package>
+ * @brief 对应组件元信息：package.xml <Package>
  */
 struct PackageMeta {
-    std::string DisplayName;
-    std::string Description;
-    std::string Version;
-    std::string ReleaseDate;
-    bool Default = false;
-    bool Virtual = false;
-    std::string Script;
+    std::string displayName;               // xml: DisplayName
+    std::string description;               // xml: Description
+    Version version;                       // xml: Version
+    Date releaseDate;                      // xml: ReleaseDate
+    bool isDefault = false;                // xml: Default
+    bool isVirtual = false;                // xml: Virtual
+    std::string script;                    // xml: Script
+    std::vector<std::string> dependencies; // xml: Dependencies
 };
 
-/*
-struct PackageVersion {
-    int major;
-    int minor;
-    int patch;
-    [[nodiscard]] std::string toString() const {
-        return std::to_string(major) + "." + std::to_string(minor) + "." + std::to_string(patch);
-    }
-};*/
+typedef PackageMeta Package;
 
-#endif //MODEL_UPDATES_H
+}
+
+#endif //MODEL_UPDATES_XML_H

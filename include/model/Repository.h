@@ -4,5 +4,22 @@
 
 #ifndef REPOSITORY_H
 #define REPOSITORY_H
+#include <string>
 
-#endif //REPOSITORY_H
+namespace udc {
+
+/**
+ * @struct Repository
+ * @brief [config.xml]<Repository>
+ */
+struct Repository {
+    std::string url;         // xml: Url
+    bool enabled = true;     // xml: Enabled
+    std::string username;    // xml: Username
+    std::string password;    // xml: Password
+    std::string displayName; // xml: DisplayName
+};
+
+} // namespace udc
+
+#endif // REPOSITORY_H

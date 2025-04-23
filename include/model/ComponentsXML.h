@@ -5,40 +5,42 @@
 #ifndef COMPONENTS_H
 #define COMPONENTS_H
 
+#include "model/Date.h"
+#include "model/Version.h"
+
+#include <string>
+#include <vector>
+
 namespace udc {
 
-struct Component {
+/**
+ * @struct LocalPackage
+ * @brief 本地components.xml中的<Packages>
+ */
+struct LocalPackage {
+    std::string name;        // xml: Name
+    std::string title;       // xml: Title
+    std::string description; // xml: Description
+    Version version;         // xml: Version
+    Date lastUpdateDate;     // xml: LastUpdateDate
+    Date installDate;        // xml: InstallDate
+    int size;                // xml: Size
+    bool checkable;          // xml: Checkable
 };
 
-struct ComponentsXML {
-    
+/**
+ * @struct LocalPackages
+ * @brief 对应整个components.xml
+ */
+struct LocalPackages {
+    std::string applicationName;        // xml: ApplicationName
+    Version applicationVersion;         // xml: ApplicationVersion
+    std::vector<LocalPackage> packages; // xml: Packages
 };
 
-/*<Packages>
-    <ApplicationName>Online Installer Example</ApplicationName>
-    <ApplicationVersion>1.0.0</ApplicationVersion>
-    <Package>
-        <Name>A</Name>
-        <Title>A Title</Title>
-        <Description>Example component A</Description>
-        <Version>1.0.2-1</Version>
-        <LastUpdateDate></LastUpdateDate>
-        <InstallDate>2020-02-13</InstallDate>
-        <Size>74</Size>
-        <Checkable>true</Checkable>
-    </Package>
-    <Package>
-        <Name>B</Name>
-        <Title>B Title</Title>
-        <Description>Example component B</Description>
-        <Version>1.0.0-1</Version>
-        <LastUpdateDate></LastUpdateDate>
-        <InstallDate>2020-02-13</InstallDate>
-        <Size>74</Size>
-        <Checkable>true</Checkable>
-    </Package>
-</Packages>*/
+typedef LocalPackage Component;
+typedef LocalPackages Components;
 
-}
+} // namespace udc
 
 #endif //COMPONENTS_H

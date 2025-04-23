@@ -2,8 +2,8 @@
 // Created by horeb on 25-4-17.
 //
 
-#ifndef UPDATESELECTOR_H
-#define UPDATESELECTOR_H
+#ifndef UDC_I_PACKAGESELECTOR_H
+#define UDC_I_PACKAGESELECTOR_H
 
 #include <vector>
 
@@ -13,17 +13,18 @@ struct Version;
 struct Updates;
 struct PackageUpdate;
 
+/**
+ * @class IPackageSelector
+ */
 class IPackageSelector {
-
   public:
     IPackageSelector() = default;
     virtual ~IPackageSelector() = default;
 
-    virtual std::vector<PackageUpdate>
-    select(Updates& updates, const Version& currentVersion) = 0;
+    virtual std::vector<PackageUpdate> select(Updates& updates, const Version& currentVersion) = 0;
 };
 
 
 }
 
-#endif //UPDATESELECTOR_H
+#endif //UDC_I_PACKAGESELECTOR_H

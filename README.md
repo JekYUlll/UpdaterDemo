@@ -1,119 +1,134 @@
+todo：组件的结构是否需要抽象为图？有父子组件。
 
-完整更新逻辑：  
-本地的components.xml里存储本地的包信息。  
-从服务端获取Updates.xml，对应的包名路径下有压缩后的元信息（主要内容为package.xml）。  
-解压之后里面有一个package.xml
+namespace KDUpdater {
+class KDTOOLS_EXPORT UpdateFinder : public Task
+{
+public:
+QList<Update *> updates() const;
+void setLocalPackageHub(std::weak_ptr<LocalPackageHub> hub);
+void setPackageSources(const QSet<QInstaller::PackageSource> &sources);
 
-Updates.xml:
-```xml
-<Updates>
-    <ApplicationName>{AnyApplication}</ApplicationName>
-    <ApplicationVersion>1.0.0</ApplicationVersion>
-    <Checksum>true</Checksum>
-    <PackageUpdate>
-        <Name>A</Name>
-        <DisplayName>A</DisplayName>
-        <Description>Example component A</Description>
-        <Version>1.0.2-1</Version>
-        <ReleaseDate>2015-01-01</ReleaseDate>
-        <Default>true</Default>
-        <UpdateFile CompressedSize="222" OS="Any" UncompressedSize="72"/>
-        <DownloadableArchives>content.7z</DownloadableArchives>
-        <SHA1>9d54e3a5adf3563913feee8ba23a99fb80d46590</SHA1>
-    </PackageUpdate>
-    <PackageUpdate>
-        <Name>B</Name>
-        <DisplayName>B</DisplayName>
-        <Description>Example component B</Description>
-        <Version>1.0.0-1</Version>
-        <ReleaseDate>2015-01-01</ReleaseDate>
-        <Default>false</Default>
-        <UpdateFile CompressedSize="222" OS="Any" UncompressedSize="72"/>
-        <DownloadableArchives>content.7z</DownloadableArchives>
-        <SHA1>9170d55a6af81c1a6a63d708a4ab6ed359775cd9</SHA1>
-    </PackageUpdate>
-    <PackageUpdate>
-        <Name>C</Name>
-        <DisplayName>C</DisplayName>
-        <Description>Example component C</Description>
-        <Version>1.0.0-1</Version>
-        <ReleaseDate>2015-01-01</ReleaseDate>
-        <Default>true</Default>
-        <UpdateFile CompressedSize="222" OS="Any" UncompressedSize="72"/>
-        <DownloadableArchives>content.7z</DownloadableArchives>
-        <SHA1>5b3939da1af492382c68388fc796837e4c36b876</SHA1>
-    </PackageUpdate>
-    <PackageUpdate>
-        <Name>C.virt</Name>
-        <DisplayName>Virtual subcomponent of C</DisplayName>
-        <Description>Example virtual component</Description>
-        <Version>1.0.0-1</Version>
-        <ReleaseDate>2015-01-01</ReleaseDate>
-        <Virtual>true</Virtual>
-        <UpdateFile CompressedSize="222" OS="Any" UncompressedSize="72"/>
-        <DownloadableArchives>content.7z</DownloadableArchives>
-        <SHA1>5b3939da1af492382c68388fc796837e4c36b876</SHA1>
-    </PackageUpdate>
-    <PackageUpdate>
-        <Name>C.virt.subcomponent</Name>
-        <DisplayName>Subcomponent of virtual component</DisplayName>
-        <Description>Example subcomponent of virtual component</Description>
-        <Version>1.0.0-1</Version>
-        <ReleaseDate>2015-01-01</ReleaseDate>
-        <UpdateFile CompressedSize="222" OS="Any" UncompressedSize="72"/>
-        <DownloadableArchives>content.7z</DownloadableArchives>
-        <SHA1>5b3939da1af492382c68388fc796837e4c36b876</SHA1>
-    </PackageUpdate>
-    <PackageUpdate>
-        <Name>AB</Name>
-        <DisplayName>AB</DisplayName>
-        <Description>Example component AB</Description>
-        <Version>1.0.2-1</Version>
-        <ReleaseDate>2015-01-01</ReleaseDate>
-        <Default>true</Default>
-        <UpdateFile UncompressedSize="0" OS="Any" CompressedSize="0"/>
-        <SHA1>f75e65b1a0f68abb77fc41da08fc26dda5409a18</SHA1>
-    </PackageUpdate>
-</Updates>
+private:
+bool downloadUpdateXMLFiles();
+bool parseUpdateXMLFiles();
+bool removeInvalidObjects();
+bool computeApplicableUpdates();
+QList<UpdateInfo> applicableUpdates(UpdatesInfo *updatesInfo);
+Resolution checkPriorityAndVersion(const QInstaller::PackageSource &source, const QVariantHash &data) const;
+};
+}
+
+int KDUpdater::compareVersion(const QString &v1, const QString &v2);
+
+## 1. 核心模型层（Data Model）
+
+```text
+Updates                    —───► contains 0..* PackageUpdate
+└─ PackageUpdate
+     • name: string
+     • version: Version
+     • releaseDate: Date
+     • default: bool
+     • virtual: bool
+     • archives: string[]
+     • sha1: string
+     • updateFile: UpdateFileMeta
+
+└─ UpdateFileMeta
+     • os: string
+     • compressedSize: int
+     • uncompressedSize: int
 ```
 
-components.xml:
-```xml
-<Packages>
-    <ApplicationName>Online Installer Example</ApplicationName>
-    <ApplicationVersion>1.0.0</ApplicationVersion>
-    <Package>
-        <Name>A</Name>
-        <Title>A Title</Title>
-        <Description>Example component A</Description>
-        <Version>1.0.2-1</Version>
-        <LastUpdateDate></LastUpdateDate>
-        <InstallDate>2020-02-13</InstallDate>
-        <Size>74</Size>
-        <Checkable>true</Checkable>
-    </Package>
-    <Package>
-        <Name>B</Name>
-        <Title>B Title</Title>
-        <Description>Example component B</Description>
-        <Version>1.0.0-1</Version>
-        <LastUpdateDate></LastUpdateDate>
-        <InstallDate>2020-02-13</InstallDate>
-        <Size>74</Size>
-        <Checkable>true</Checkable>
-    </Package>
-</Packages>
+---
+
+## 2. 解析/检测层（Check & Parse）
+
+```text
+IUpdateProvider  (interface)
+├─ fetch() : string                  ← 拉取原始 Updates.xml 文本
+└─ parse(xml: string) : Updates      ← 解析成 Updates 对象
+
+  │
+  ├─ XmlUpdateProvider (implements)  ← 从 HTTP 或本地文件下载 XML
+  └─ MockUpdateProvider (implements) ← 单元测试用，提供本地模拟 XML
 ```
 
-package.xml:
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<Package>
-    <DisplayName>A</DisplayName>
-    <Description>Example component A</Description>
-    <Version>1.0.0</Version>
-    <ReleaseDate>2020-01-01</ReleaseDate>
-    <Default>true</Default>
-    <Script>script1.0.0.qs</Script>
-</Package>
+- **职责**：
+    1. `fetch()` 拿到原始文本（可选 HTTP 或本地）；
+    2. `parse()` 调用 tinyxml2 把文本转成模型。
+
+---
+
+## 3. 业务决策层（Selection）
+
+```text
+UpdateSelector
+└─ select(updates: Updates, currentVersion: Version) : List<PackageUpdate>
+     • 根据策略（默认/版本号/平台/用户选择）筛选出需要下载的 PackageUpdate 列表
 ```
+
+- **职责**：封装「哪些组件要更新」的决策逻辑。
+
+---
+
+## 4. 下载/安装共用层（Download & Install 抽象）
+
+#### 4.1. 下载接口
+
+```text
+IDownloadService  (interface)
+└─ download(pkg: PackageUpdate, destDir: string) : LocalArchiveInfo
+
+  │
+  └─ HttpDownloadService (implements)
+       • 使用 libcurl 或 httplib 下载内容
+```
+
+- **`LocalArchiveInfo`**：封装下载后本地文件路径、大小、校验信息等。
+
+#### 4.2. 安装接口
+
+```text
+IInstallService   (interface)
+└─ install(archive: LocalArchiveInfo, targetDir: string) : InstallResult
+
+  │
+  ├─ ZipInstallService    (implements)  ← 解压 .7z/.zip
+  └─ RsyncInstallService  (implements)  ← 文件直接覆盖（示例）
+```
+
+- **职责**：把下载到的压缩包或资源应用到目标路径，不管它来源于“更新”还是“在线安装”都可用。
+
+---
+
+## 5. 协调层（Orchestration）
+
+```text
+UpdateManager
+├─ provider: IUpdateProvider
+├─ selector: UpdateSelector
+├─ downloader: IDownloadService
+├─ installer: IInstallService
+
+└─ checkAndDownload(currentVersion: Version, downloadDir: string)
+     1. xmlText ← provider.fetch()
+     2. updates ← provider.parse(xmlText)
+     3. toUpdateList ← selector.select(updates, currentVersion)
+     4. for each pkg in toUpdateList:
+          localInfo ← downloader.download(pkg, downloadDir)
+     5. return List<LocalArchiveInfo>
+
+└─ installAll(archives: List<LocalArchiveInfo>, targetDir: string)
+     for each arc in archives:
+       installer.install(arc, targetDir)
+```
+
+- **职责**：
+    - `checkAndDownload` 只管“检测+下载”，不触碰安装；
+    - `installAll` 只管“安装”，不触碰检测逻辑。
+    - 真正的更新流程：
+      ```cpp
+      auto archives = mgr.checkAndDownload(curVer, "/tmp/updates");
+      mgr.installAll(archives, "/app/path");
+      ```

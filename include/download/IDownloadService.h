@@ -5,20 +5,13 @@
 #ifndef IDOWNLOADSERVICE_H
 #define IDOWNLOADSERVICE_H
 
-#include "IInstallService.h"
+#include "install/IInstallService.h"
 
 #include <string>
 
 namespace udc {
 
 struct PackageUpdate;
-
-/*IDownloadService  (interface)
-└─ download(pkg: PackageUpdate, destDir: string) : LocalArchiveInfo
-
-  │
-  └─ HttpDownloadService (implements)
-       • 使用 libcurl 或 httplib 下载内容*/
 
 class IDownloadService {
   public:

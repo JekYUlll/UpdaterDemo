@@ -5,7 +5,7 @@
 #ifndef HTTPNETWORKACCESS_H
 #define HTTPNETWORKACCESS_H
 
-#include "download/INetworkAccess.h"
+#include "net/INetworkAccess.h"
 
 #include <cpr/cpr.h>
 
@@ -13,10 +13,11 @@ namespace udc {
 
 class HttpNetworkAccess final : public INetworkAccess {
   public:
-    HttpNetworkAccess();
-    ~HttpNetworkAccess() override;
+    HttpNetworkAccess() = default;
+    ~HttpNetworkAccess() override = default;
 
     std::string downloadText(const std::string& url) override {
+        LOG_D("HttpNetworkAccess::downloadText from {}.", url);
         auto r = Get(cpr::Url{url});
         if (r.status_code != 200)
             throw std::runtime_error("Failed to fetch");
@@ -24,6 +25,7 @@ class HttpNetworkAccess final : public INetworkAccess {
     }
 
     std::vector<uint8_t> downloadBinary(const std::string& url) override {
+        LOG_D("HttpNetworkAccess::downloadBinary from {}.", url);
         auto r = Get(cpr::Url{url});
         if (r.status_code != 200) {
             throw std::runtime_error("Failed to fetch binary: HTTP " +
@@ -35,6 +37,7 @@ class HttpNetworkAccess final : public INetworkAccess {
 
     bool downloadToFile(const std::string& url,
                         const std::string& destPath) override {
+        LOG_D("HttpNetworkAccess::downloadToFile from {} to {}.", url, destPath);
         std::ofstream output(destPath, std::ios::binary);
         if (!output) {
             throw std::runtime_error("Cannot open file for writing: " +
