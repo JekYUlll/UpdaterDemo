@@ -1,0 +1,8 @@
+//
+// Created by horeb on 25-4-19.
+//
+
+#ifndef XMLCOMPONENTREPOSITORY_H
+#define XMLCOMPONENTREPOSITORY_H
+
+#endif //XMLCOMPONENTREPOSITORY_H

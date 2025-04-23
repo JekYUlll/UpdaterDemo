@@ -1,0 +1,8 @@
+//
+// Created by horeb on 25-4-18.
+//
+
+#ifndef RSYNCINSTALLSERVICE_H
+#define RSYNCINSTALLSERVICE_H
+
+#endif //RSYNCINSTALLSERVICE_H

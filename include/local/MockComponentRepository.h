@@ -1,0 +1,8 @@
+//
+// Created by horeb on 25-4-19.
+//
+
+#ifndef MOCKCOMPONENTREPOSITORY_H
+#define MOCKCOMPONENTREPOSITORY_H
+
+#endif //MOCKCOMPONENTREPOSITORY_H

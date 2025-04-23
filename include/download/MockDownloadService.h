@@ -1,0 +1,8 @@
+//
+// Created by horeb on 25-4-18.
+//
+
+#ifndef MOCKDOWNLOADSERVICE_H
+#define MOCKDOWNLOADSERVICE_H
+
+#endif //MOCKDOWNLOADSERVICE_H

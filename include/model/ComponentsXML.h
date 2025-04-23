@@ -1,0 +1,44 @@
+//
+// Created by horeb on 25-4-18.
+//
+
+#ifndef COMPONENTS_H
+#define COMPONENTS_H
+
+namespace udc {
+
+struct Component {
+};
+
+struct ComponentsXML {
+    
+};
+
+/*<Packages>
+    <ApplicationName>Online Installer Example</ApplicationName>
+    <ApplicationVersion>1.0.0</ApplicationVersion>
+    <Package>
+        <Name>A</Name>
+        <Title>A Title</Title>
+        <Description>Example component A</Description>
+        <Version>1.0.2-1</Version>
+        <LastUpdateDate></LastUpdateDate>
+        <InstallDate>2020-02-13</InstallDate>
+        <Size>74</Size>
+        <Checkable>true</Checkable>
+    </Package>
+    <Package>
+        <Name>B</Name>
+        <Title>B Title</Title>
+        <Description>Example component B</Description>
+        <Version>1.0.0-1</Version>
+        <LastUpdateDate></LastUpdateDate>
+        <InstallDate>2020-02-13</InstallDate>
+        <Size>74</Size>
+        <Checkable>true</Checkable>
+    </Package>
+</Packages>*/
+
+}
+
+#endif //COMPONENTS_H

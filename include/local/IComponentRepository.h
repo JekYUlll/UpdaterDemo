@@ -1,0 +1,8 @@
+//
+// Created by horeb on 25-4-19.
+//
+
+#ifndef ICOMPONENTREPOSITORY_H
+#define ICOMPONENTREPOSITORY_H
+
+#endif //ICOMPONENTREPOSITORY_H
