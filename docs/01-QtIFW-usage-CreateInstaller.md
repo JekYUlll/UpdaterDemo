@@ -7,7 +7,7 @@
 - `archivegen`：创建组件归档文件
 - `repogen`：生成和管理组件仓库
 - `devtool`：开发辅助工具，用于测试单个操作
-- `repocompare`：仓库比较工具，对比不同版本的仓库内容
+- `repocompare`：仓库比较工具，对比不同版本的仓库内容（这什么玩意？没编出来）
 
 `maintenancetool`实际是配置过的`installerbase`。
 
@@ -118,6 +118,8 @@ repogen.exe -p < 软件包目录> < 存储库目录>
 ```bash
 repogen.exe -p packages -i org.qt-project.sdk.qt,org.qt-project.sdk.qtcreator repository
 ```
+
+`repogen`整体做的工作：读取每个包的`package.xml`、压缩为`.7z`、生成sha1校验和、生成文件目录结构、生成`Updates.xml`。
 
 **配置存储库**：
 
